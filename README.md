@@ -1,6 +1,51 @@
 # Usage
-Allow one to place a reservetion for a sport court automatically on CEPSUM website.
+Allows one to place a reservation for a sport court automatically on CEPSUM website.
+
+# Set up project
+1. [Optional]
+    * Install python : recommended version 3.6
+    * Install venv
+        - (Linux & MacOS)
+            ```shell script
+            python3 -m pip install --user virtualenv
+            ```
+        - (Windows)
+            ```shell script
+            py -m pip install --user virtualenv
+            ```
+1. Create virtual environment 
+    - (Linux & MacOS)
+        ```shell script
+        python3 -m venv venv        
+        ```
+    - (Windows)
+        ```shell script
+        py -m venv venv
+        ```
+1. Activate virtual environment
+    - (Linux & MacOS)
+        ```shell script
+        source venv/bin/activate
+        ```
+    - (Windows)
+        ```shell script
+        .\venv\Scripts\activate
+        ```
+1. Install required packages
+    ```shell script
+    pip install -r requirements.txt
+    ```
+1. Download **geckodriver** from https://github.com/mozilla/geckodriver/releases and place it into */venv/bin*
+
 
 # How to use
-Edit *config_template.py* **and** rename it to *config.py*
-run main.py
+1. Edit *config_template.py* **and** rename it to *config.py*
+1. run program 
+    - (Linux & MacOS)
+        ```shell script
+        python3 main.py
+        ```
+    - (Windows)
+        ```shell script
+        py main.py
+        ```
