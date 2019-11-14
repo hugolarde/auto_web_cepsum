@@ -2,7 +2,6 @@
 
 username = ""  # nom d' utilisateur to acces coba.net, typical : "prenom.nom@polymtl.ca"
 password = ""  # mot de passe de coba.net
-sport = ""  # un sport parmis : "tennis"
 number_partner = ""  # numero de partenaire typical "******"
 date = ""  # date de la reservation, format : "yyyy-mm-dd"
 time_min = ""  # heure de debut de disponibilite, format : "hh:mm"
