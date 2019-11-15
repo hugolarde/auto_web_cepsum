@@ -1,5 +1,7 @@
 # Important : rename this file config.py if you want this configuration to be used by the program
 
+system = ""  # Operating system parmi : "linux", "windows"
+browser = ""  # Navigateur parmi "firefox", "chrome"
 username = ""  # nom d' utilisateur to acces coba.net, typical : "prenom.nom@polymtl.ca"
 password = ""  # mot de passe de coba.net
 number_partner = ""  # numero de partenaire typical "******"

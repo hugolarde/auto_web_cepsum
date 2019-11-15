@@ -44,7 +44,17 @@ def quit_browser(browser):
 
 
 def start_browser():
-    browser = webdriver.Firefox()
+    if config.browser == 'firefox' and config.system == "linux":
+        browser = webdriver.Firefox(executable_path=r"./venv/include/geckodriver")
+    elif config.browser == 'firefox' and config.system == "windows":
+        browser = webdriver.Firefox(executable_path=r".\venv\include\geckodriver.exe")
+    elif config.browser == 'chrome' and config.system == "linux":
+        browser = webdriver.Chrome(executable_path=r"./venv/include/chromedriver")
+    elif config.browser == 'chrome' and config.system == "windows":
+        browser = webdriver.Chrome(executable_path=r".\venv\include\chromedriver.exe")
+    else:
+        print("Error : wrong browser configured")
+        exit(1)
     atexit.register(quit_browser, browser)
     return browser
 
@@ -59,6 +69,8 @@ def log_in(browser):
 def wait_reservation_available(browser):
     while len(browser.find_elements_by_class_name('important')) != 0:
         time.sleep(1)
+        WebDriverWait(browser, 1).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'_btnDatePrec')]"))).click()
+        WebDriverWait(browser, 1).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'_btnDateSuiv')]"))).click()
     return
 
 

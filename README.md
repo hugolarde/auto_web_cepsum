@@ -1,6 +1,9 @@
 # Usage
 Allows one to place a reservation for a sport court automatically on CEPSUM website.
 
+# Supported platforms
+This programs works on Windows and Linux (not tested for MacOs) with Chrome and Firefox
+
 # Set up project
 1. [Optional]
     * Install python : recommended version 3.6
@@ -35,7 +38,9 @@ Allows one to place a reservation for a sport court automatically on CEPSUM webs
     ```shell script
     pip install -r requirements.txt
     ```
-1. Download **geckodriver** from https://github.com/mozilla/geckodriver/releases and place it into */venv/bin*
+1. Browser :
+    - Chrome : Download **chromedriver** from https://chromedriver.chromium.org/downloads and place it into */venv/include*
+    - Firefox : Download **geckodriver** from https://github.com/mozilla/geckodriver/releases and place it into */venv/include*
 
 
 # How to use
@@ -43,9 +48,9 @@ Allows one to place a reservation for a sport court automatically on CEPSUM webs
 1. run program 
     - (Linux & MacOS)
         ```shell script
-        python3 main.py
+        python3 -m main
         ```
     - (Windows)
         ```shell script
-        py main.py
+        py -m main
         ```
