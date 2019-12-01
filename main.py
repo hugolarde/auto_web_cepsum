@@ -23,15 +23,17 @@ def select_sport():
 
 
 def time_string_to_int(time_string):
-    return int(time_string[:2]) + int(time_string[-2:])/60
+    return int(time_string[:time_string.find(':')]) + int(time_string[time_string.find(':')+1:])/60
 
 
 def wait_start_program_time():
-    if len(config.start_program_time) is not 5:
+    if config.start_program_time.find(':') is -1:
         return
     start_program = time_string_to_int(config.start_program_time)
-    current_time_string_list = datetime.now().strftime("%H %M").split()
-    current_time = int(current_time_string_list[0]) + int(current_time_string_list[1]) / 60
+    now = datetime.now()
+    current_time = now.hour + now.minute/60 + now.second/3600
+    if current_time < start_program:
+        print("It's " + now.strftime("%H:%M:%S") + ", program will start at " + config.start_program_time)
     while current_time < start_program:
         time.sleep(10)
         now = datetime.now()
@@ -45,13 +47,13 @@ def quit_browser(browser):
 
 def start_browser():
     if config.browser == 'firefox' and config.system == "linux":
-        browser = webdriver.Firefox(executable_path=r"./venv/include/geckodriver")
+        browser = webdriver.Firefox(executable_path=r"./include/geckodriver")
     elif config.browser == 'firefox' and config.system == "windows":
-        browser = webdriver.Firefox(executable_path=r".\venv\include\geckodriver.exe")
+        browser = webdriver.Firefox(executable_path=r".\include\geckodriver.exe")
     elif config.browser == 'chrome' and config.system == "linux":
-        browser = webdriver.Chrome(executable_path=r"./venv/include/chromedriver")
+        browser = webdriver.Chrome(executable_path=r"./include/chromedriver")
     elif config.browser == 'chrome' and config.system == "windows":
-        browser = webdriver.Chrome(executable_path=r".\venv\include\chromedriver.exe")
+        browser = webdriver.Chrome(executable_path=r".\include\chromedriver.exe")
     else:
         print("Error : wrong browser configured")
         exit(1)
@@ -76,8 +78,8 @@ def wait_reservation_available(browser):
 
 def place_reservation(browser, sport_index):
     WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.ID, 'lnkPRALIBRE'))).click()
-    WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.XPATH, "//a[contains(@id,'_grdReservations-ajouter')]"))).click()
-    WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.XPATH, "//img[contains(@id,'" + SPORT_IMAGES_NAME[sport_index] + "')]"))).click()
+    WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'_grdReservations-ajouter')]"))).click()
+    WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//img[contains(@id,'" + SPORT_IMAGES_NAME[sport_index] + "')]"))).click()
     date_field_value = WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.XPATH, "//input[contains(@id,'txtDate')]"))).get_attribute('value')
     while date_field_value != config.date:
         WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'_btnDateSuiv')]"))).click()
@@ -119,14 +121,14 @@ def place_reservation(browser, sport_index):
         if config.number_partner in option.get_attribute('value'):
             option.click()
             break
-    WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.XPATH, "//button[contains(@id,'_btnConfirmer')]"))).click()
-    WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.XPATH, "//button[contains(@id,'_btnFermer')]"))).click()
+    WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@id,'_btnConfirmer')]"))).click()
+    WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@id,'_btnFermer')]"))).click()
     print("session reservee de " + heure_debut_choisie + " a " + heure_fin_choisie)
 
 
 def log_out(browser):
-    WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.XPATH, "//a[contains(@id,'lnkDecEnt')]"))).click()
-    WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@id,'popup-boutons')]"))).find_element_by_class_name('primaire').click()
+    WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'lnkDecEnt')]"))).click()
+    WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//div[contains(@id,'popup-boutons')]"))).find_element_by_class_name('primaire').click()
 
 
 if __name__ == "__main__":
