@@ -156,3 +156,4 @@ if __name__ == "__main__":
     place_reservation(browser, sport_index)
     log_out(browser)
     exit(0)
+    
