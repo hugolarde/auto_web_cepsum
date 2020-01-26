@@ -5,10 +5,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.options import Options as firefox_options
+from selenium.webdriver.chrome.options import Options as chrome_options
 import config
 
 
-SPORTS = ["Badminton", "Racquetball", "Salles d' activites diverses", "Squash et spikeball", "Tennis", "Tennis de table", "Wallyball"]
+SPORTS = ["Badminton", "Raquetball", "Salles d'activites diverses", "Squash et spikeball", "Tennis", "Tennis de table", "Wallyball"]
 SPORT_IMAGES_NAME = ["image02BAD", "image03RACQUET", "image04SALLES", "image06SQUASH", "image07TENNIS", "image08PINGPONG", "image09WALLY"]
 
 
@@ -27,7 +29,7 @@ def time_string_to_int(time_string):
 
 
 def wait_start_program_time():
-    if config.start_program_time.find(':') is -1:
+    if config.start_program_time.find(':') == -1:
         return
     start_program = time_string_to_int(config.start_program_time)
     now = datetime.now()
@@ -35,9 +37,12 @@ def wait_start_program_time():
     if current_time < start_program:
         print("It's " + now.strftime("%H:%M:%S") + ", program will start at " + config.start_program_time)
     while current_time < start_program:
-        time.sleep(10)
-        now = datetime.now()
-        current_time = now.hour + now.minute/60 + now.second/3600
+        try:
+            time.sleep(10)
+            now = datetime.now()
+            current_time = now.hour + now.minute/60 + now.second/3600
+        except KeyboardInterrupt:
+            exit(0)
     return
 
 
@@ -46,14 +51,21 @@ def quit_browser(browser):
 
 
 def start_browser():
-    if config.browser == 'firefox' and config.system == "linux":
-        browser = webdriver.Firefox(executable_path=r"./include/geckodriver")
-    elif config.browser == 'firefox' and config.system == "windows":
-        browser = webdriver.Firefox(executable_path=r".\include\geckodriver.exe")
-    elif config.browser == 'chrome' and config.system == "linux":
-        browser = webdriver.Chrome(executable_path=r"./include/chromedriver")
-    elif config.browser == 'chrome' and config.system == "windows":
-        browser = webdriver.Chrome(executable_path=r".\include\chromedriver.exe")
+    if config.browser == 'firefox':
+        options = firefox_options()
+        options.headless = config.headless
+        if config.system == "linux":
+            browser = webdriver.Firefox(options=options, executable_path=r"./include/geckodriver")
+        elif config.system == "windows":
+            browser = webdriver.Firefox(options=options, executable_path=r".\include\geckodriver.exe")
+    elif config.browser == 'chrome' :
+        options = chrome_options()
+        if config.headless : 
+            options.add_argument('--headless')
+        if config.system == "linux":
+            browser = webdriver.Chrome(options=options, executable_path=r"./include/chromedriver")
+        elif config.system == "windows":
+            browser = webdriver.Chrome(options=options, executable_path=r".\include\chromedriver.exe")
     else:
         print("Error : wrong browser configured")
         exit(1)
@@ -70,9 +82,14 @@ def log_in(browser):
 
 def wait_reservation_available(browser):
     while len(browser.find_elements_by_class_name('important')) != 0:
-        time.sleep(1)
-        WebDriverWait(browser, 1).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'_btnDatePrec')]"))).click()
-        WebDriverWait(browser, 1).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'_btnDateSuiv')]"))).click()
+        try:
+            time.sleep(1)
+            WebDriverWait(browser, 1).until(EC.invisibility_of_element_located((By.CLASS_NAME, "spinnercontainer")))
+            WebDriverWait(browser, 1).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'_btnDatePrec')]"))).click()
+            WebDriverWait(browser, 1).until(EC.invisibility_of_element_located((By.CLASS_NAME, "spinnercontainer")))
+            WebDriverWait(browser, 1).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(@id,'_btnDateSuiv')]"))).click()
+        except KeyboardInterrupt:
+            exit(0)
     return
 
 
@@ -113,7 +130,7 @@ def place_reservation(browser, sport_index):
                 heure_debut_choisie = text_list[0]
                 heure_fin_choisie = text_list[2]
                 break
-    if heure_debut_choisie is '' or heure_fin_choisie is '':
+    if heure_debut_choisie == '' or heure_fin_choisie == '':
         print("No time slot available")
         exit(0)
     partner_select_element = WebDriverWait(browser, 2).until(EC.presence_of_element_located((By.XPATH, "//select[contains(@id,'_CTRL_CBOPARTENAIRE1')]")))
@@ -123,7 +140,7 @@ def place_reservation(browser, sport_index):
             break
     WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@id,'_btnConfirmer')]"))).click()
     WebDriverWait(browser, 2).until(EC.element_to_be_clickable((By.XPATH, "//button[contains(@id,'_btnFermer')]"))).click()
-    print("session reservee de " + heure_debut_choisie + " a " + heure_fin_choisie)
+    print("session reservée de " + heure_debut_choisie + " à " + heure_fin_choisie)
 
 
 def log_out(browser):
